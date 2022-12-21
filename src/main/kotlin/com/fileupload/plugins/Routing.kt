@@ -30,10 +30,11 @@ fun Application.configureRouting() {
             var uploadSuccess = false
 
             multipartData.forEachPart { part ->
-                when(part) {
+                when (part) {
                     is PartData.FormItem -> {
                         fileDescription = part.value
                     }
+
                     is PartData.FileItem -> {
 
                         originalFileName = (part.originalFileName as String)
@@ -42,7 +43,7 @@ fun Application.configureRouting() {
 
                             val extension = originalFileName.split(".")[1]
 
-                            newFileName = System.currentTimeMillis().toString()+"."+extension
+                            newFileName = System.currentTimeMillis().toString() + "." + extension
 
                             val fileBytes = part.streamProvider().readBytes()
 
@@ -51,6 +52,7 @@ fun Application.configureRouting() {
                             uploadSuccess = createFileUpload(file = file, fileBytes = fileBytes)
                         }
                     }
+
                     else -> {}
                 }
                 part.dispose()
@@ -61,6 +63,8 @@ fun Application.configureRouting() {
             } else {
                 HttpStatusCode.BadRequest
             }
+
+            printSystem("Original File Name: $originalFileName, New FileName: $newFileName, File Description: $fileDescription")
 
             call.respondText(text = "File upload success", status = httStatus)
 
@@ -82,7 +86,7 @@ suspend fun createFileUpload(file: File, fileBytes: ByteArray): Boolean {
                 file.writeBytes(fileBytes)
                 uploaded = true
             }
-       }
+        }
 
     } else {
         file.writeBytes(fileBytes)
